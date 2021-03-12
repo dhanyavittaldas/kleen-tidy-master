@@ -1,0 +1,190 @@
+{% extends '/admin/layout.html' %}
+{% block body %}
+<!--flash box-->
+<div class="col-lg-12">
+    <div class="row alert-box">
+        <noscript>
+            {% with messages = get_flashed_messages(with_categories = True) %}
+                {% if messages %}
+                    <div class="col-lg-12 alert alert-info fade show" role="alert"><span class ="alt-item">Enable JavaScript to get the flashed messages</span></div>
+                {% endif %}
+            {% endwith %}
+        </noscript>
+    </div>
+</div>
+<!--flash box ends-->
+
+<div class="filter-box">
+    <div class="filter-item">
+        <label for="filter">Filter</label>
+        <select name="filter" value="{{value}}" onchange="filter_jobs(this.value)" id="filter" class="form-control">
+            <option value="1">All Jobs</option>
+            <option value="2">Jobs Posted Today</option>
+            <option value="3">Active Jobs</option>
+            <option value="4">Completed Jobs</option>
+            <option value="5">Reassigned Jobs</option>
+            <option value="6">To-do Today</option>
+        </select>
+    </div>
+</div>
+
+<div class="col-sm-12 table-responsive mt-5">
+    <div class="row">
+        <div class="col-lg-9 head-1 title-job" >{{title}} List<!--To be canged by jinja while filtering--></div>
+    </div>
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th scope="col">Job ID</th>
+                <th scope="col">Job Title</th>
+                <th scope="col">Client Name</th>
+                <th scope="col">Client Contact</th>
+                <th scope="col">Work-Date</th>
+                <th scope="col">View</th>
+                <th scope="col">Delete</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if jobs %}
+                {% for job in jobs %}
+                    <tr>
+                        <th scope="row">{{ job.id }}</th>
+                        <td>{{ job.job_title }}</td>
+                        <td>{{ job.client_name }}</td>
+                        <td><a href="tel:{{ job.contact_no }}">{{ job.contact_no }}</a></td>
+                        <td>{{job.workdate}}</td>
+                        <td><a href ="#view" onclick="openViewModal({{job.id}})">View</a></td>
+                        <td><a href="/admin/delete/job/{{job.id}}" onclick="return confirm('Do you want to delete?')">Delete</a></td>
+                    </tr>
+                {% endfor %}    
+            {% endif %}
+            
+        </tbody>
+    </table>
+</div>
+
+
+<!-- Modal to view jobs -->
+<div class="modal fade" id="viewJobsModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+        <div class="modal-header">  
+            <h5 class="modal-title head-1" id="modal_head"></h5><!--change the color of text by the status in Database-->
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="modal-body">
+            <!-- this view_jobs modal body -->
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="openEditModal(3)">Edit</button>
+        </div>
+        </div>
+    </div>
+</div>
+
+  
+<i class="fa fa-arrow-up back-to-top" title="back to top"></i>
+<style>
+    .filter-box{
+        position: relative;
+    }
+    .filter-item{
+        position: absolute;
+        right:0px;
+        width:200px;
+        z-index: 1;
+    }
+</style>
+<script>
+    // edit jobs details modal function
+    function openEditModal(jobid, el = null){
+        $('#add-jobs *').prop('disabled', true);
+        $(".data-load").css("color","skyblue");
+        $(".data-load").html("Loading...");
+        $("#title").val("Anurag");
+        $("#staticBackdrop-edit-jobs").modal("show");
+        return false;
+    }
+
+    // view jobs details function
+    function openViewModal(jobid){
+        $("#viewJobsModal").modal("show");
+        $("#viewJobsModal #modal_head").text("Job Id - "+ jobid);
+        $("#viewJobsModal .modal-body").html('<div class="col-lg-12 text-center py-5" style="font-size:80px;color:lightgrey;"><i class="fa fa-spinner fa-spin"></i></div>');
+        $.ajax({
+            url :"/admin/open/job/"+jobid,
+            contentType: "application/json; charset=utf-8",
+            dataType: "json"
+        }).done(function(data){
+            if (!data.status){
+                $("#viewJobsModal .modal-body").html("<span class='text-danger'>"+data.message+"</span>");
+            }
+            else{
+                $("#viewJobsModal .modal-body").html(data.html);
+            }
+        });
+        // $.ajax({
+        //     url: "/contractor/start/job/" + id,
+        //     contentType: "application/json; charset=utf-8",
+        //     dataType: "json"
+        // }).done(function(data){
+        //     if (!data.status){
+        //         $("#"+data.id+" .card .card-body").append(data.message)
+        //     }
+        //     else{
+        //         $(el).html(data.message);
+        //         $(el).removeClass("btn-primary");
+        //         $(el).addClass('btn-success');
+        //         $(el).attr("onclick","finish(this,"+data.id+")");
+        //     }
+        // });
+    }
+
+    // view jobs funtions- which will be further used to send request for data for different jobs filter
+    function filter_jobs(value){
+        // value is the value for filter
+        title_dict = {
+            "1": "All Jobs", "2":"Jobs Posted Today","3": "Active Jobs", "4":"Completed Jobs", "5":"Reassigned Jobs", "6":"To-do Today"
+        }
+        // window.history.pushState({jobtype:value}, title_dict[value], '/admin/view/jobs/'+value);
+        window.location = "/admin/view/jobs/" + value;
+    }
+
+    window.onload = function(event){
+        title_dict = {
+            "1": "All Jobs", "2":"Jobs Posted Today","3": "Active Jobs", "4":"Completed Jobs", "5":"Reassigned Jobs", "6":"To-do Today"
+        }  
+        var value = {{value|tojson}};
+        $(".title-job").html(title_dict[value]+" List");
+        $("#filter").val(value);
+
+        var alert_box = document.querySelector(".alert-box");
+            var i = 0;
+            {% with messages = get_flashed_messages(with_categories = True) %}
+                {% if messages %}
+                    {% for category,message in messages %}
+                        var text = {{message|tojson}};
+                        var type = {{category|tojson}};
+                        var alert_html = '<div class=" col-lg-12 alert alert-'+ type +' alert-dismissible fade show" role="alert"><span id="alt-item'+i+'"></span><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>'
+                        alert_box.insertAdjacentHTML("beforeend",alert_html);
+                        document.getElementById('alt-item'+i).innerHTML = text;
+                        i++;
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+        }
+
+    // window.addEventListener("popstate",function(event){
+    //     title_dict = {
+    //         "1": "All Jobs", "2":"Jobs Posted Today","3": "Active Jobs", "4":"Completed Jobs", "5":"Reassigned Jobs", "6":"To-do Today"
+    //     }
+    //     val = event.state.jobtype;
+    //     // alert(val)
+    //     $(".title-job").html(title_dict[val] +" List");
+    //     $("#filter").val(val);
+    // });
+</script>
+{% endblock  %}

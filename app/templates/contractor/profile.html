@@ -1,0 +1,284 @@
+{% extends '/contractor/layout.html' %}
+
+{% block body %}
+<style>
+    .border-info{
+        box-shadow: 0px 0px 8px 0px rgb(205, 242, 255);
+    }
+    .progress{
+        height:5px;
+        margin-bottom: 18px;
+    }
+    .job-card{
+        min-height: 500px;
+        max-height: 800px;
+        overflow-y:auto;
+        box-shadow: 0px 0px 8px 0px rgb(219, 219, 219);
+    }
+    .job-card::-webkit-scrollbar{
+        width:6px;
+    }
+    .job-card::-webkit-scrollbar-thumb{
+        background-color:rgb(175, 175, 175);
+    }
+    .job-card::-webkit-scrollbar-track{
+        background-color: rgb(223, 223, 223);
+    }
+    .btn{
+        border-radius:0px;
+    }
+    #pass_form{
+        display:none;
+    }
+</style>
+    <div class="container-lg mt-5">
+        <!--feild to show the flashed messages-->
+        <div class="col-md-12">
+            <div class="row alert-box"></div>
+        </div>
+        <!--flashed messages area ends here-->
+        <div class="row">
+            <!--profile divsion-->
+            {% if details %}
+                <div class="col-lg-4">
+                    <div class="card border-info mb-3">
+                        <div class="card-header bg-info head-1" style="color: white;">
+                            ID - {{details.userid}}
+                        </div>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item">
+                                <div class="head-2">Business/Contact Name</div>
+                                <span>{{details.business_contact_name}}</span>
+                            </li>
+                            <li class="list-group-item">
+                                <div class="head-2">ABN Number</div>
+                                <span>{{ details.abn }}</span>
+                            </li>
+                            <li class="list-group-item">
+                                <div class="head-2">Contact Number</div>
+                                <span>{{ details.mob_number }}</span>
+                                <a href="tel:{{ details.mob_number }}" class="float-right">Call</a>
+                            </li>
+                            <li class="list-group-item">
+                                <div class="head-2">Email Id</div>
+                                <span>{{ details.email }}</span>
+                                <a href="mailto:{{ details.email }}" class="float-right">Email</a>
+                            </li>
+                            <li class="list-group-item">
+                                <span class="head-2">Password</span>
+                                <a href="#" onclick="show_form(this)" class="float-right" id="change">Change</a>
+                                <div class="row" id="pass_form">
+                                    <div class="col-lg-12">
+                                        <form action="/contractor/change_pass/{{userid}}" method="post">
+                                            <input type="password" name="old_pass" required class="form-control" placeholder="Enter Current Password">
+                                            <input type="password" name="pass" required id = "main" class="form-control" placeholder="Enter New Password">
+                                            <input type="password" name="conf_pass" required class="form-control" placeholder="Confirm Password" oninput="confirm_pass(this);">
+                                            <button type="submit" class="btn btn-primary mt-2" role="button">Change</button>
+                                            <button type="reset" class="btn btn-light mt-2" onclick="$('#pass_form').hide();$('#change').show();">Cancle</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="list-group-item">
+                                <div class="head-2">Address</div>
+                                <span>{{ details.address }}</span>
+                            </li>
+                        {% endif %}
+                        {% if accepted>= 0 and completed>=0 and reassigned>=0 %}
+                            <li class="list-group-item">
+                                <span class="head-2">Total Jobs: </span>
+                                <span id="job-count">{{ accepted + completed + reassigned }}</span>
+                            </li>
+                            {% else %}
+                                <li class="list-group-item">
+                                    <span class="head-2">Total Jobs: </span>
+                                    <span id="job-count">0</span>
+                                </li>
+                        {% endif %}
+                            
+                        </ul>
+                    </div>
+                {% if accepted>= 0 and completed>=0 and reassigned>=0 %}
+                    <div class="card border-info mb-3">
+                        <div class="card-body with-js">
+                            <label for="accepted">Accepted <span id="accepted_count">{{accepted}}</span></label>
+                            <div class="progress">
+                                <div class="progress-bar" id="accepted" role="progressbar" aria-valuenow="{{(accepted/(accepted + completed + reassigned))*100}}" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+
+                            <label for="completed">Completed <span id="completed_count">{{completed}}</span></label>
+                            <div class="progress">
+                                <div class="progress-bar bg-success" id="completed" role="progressbar" aria-valuenow="{{(completed/(accepted + completed + reassigned))*100}}" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+
+                            <label for="reassigned">Reassigned <span id="reassigned_count">{{reassigned}}</span></label>
+                            <div class="progress">
+                                <div class="progress-bar bg-warning" id="reassigned" role="progressbar" aria-valuenow="{{(reassigned/(accepted + completed + reassigned))*100}}" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                            <noscript>
+                                <style>
+                                    .with-js .progress, .with-js label{
+                                        display:none;
+                                    }
+                                    progress{width:100%;}
+                                </style>
+                                <label for="accepted_no" style="display: block!important;">Accepted <span id="accepted_count">{{accepted}}</span></label>
+                                <progress id="accepted_no" value="{{(accepted/(accepted + completed + reassigned))*100}}%" max="100"> {{(accepted/(accepted + completed + reassigned))*100}}% </progress>
+
+                                <label for="completed_no" style="display: block!important;">Completed <span id="completed_count">{{completed}}</span></label>
+                                <progress id="completed_no" value="{{(completed/(accepted + completed + reassigned))*100}}%" max="100"> {{(completed/(accepted + completed + reassigned))*100}}%</progress>
+
+                                <label for="reassigned_no" style="display: block!important;">Reassigned <span id="reassigned_count">{{reassigned}}</span></label>
+                                <progress id="reassigned_no" value="{{(completed/(accepted + completed + reassigned))*100}}%" max="100"> {{(reassigned/(accepted + completed + reassigned))*100}}% </progress>
+                            </noscript>
+                        </div>
+                    </div>
+                {% endif %}
+
+                </div>
+            <!-- jobs users has and their details -->
+            <div class="col-lg-8">
+                <h6>Jobs List - {{details.business_contact_name}}</h6>
+                <div class="card mb-3 job-card">
+                    <!-- <ul class="list-group list-group-flush">
+                        Jobs Will be present inside this block
+                        <li class="list-group-item">
+                            
+                        </li>
+                    </ul> -->
+                    <div class="accordion" id="accordionExample">
+                    {% if jobs %}
+                        {% for items in jobs %} <!-- sjobs is actually the jobs in status tables-->
+                        {% set status = items[0] %}
+                        {% set detail = items[1] %}
+                        <div class="card">
+                            <div class="btn bg-light btn-link text-left collapsed py-2" id="job{{status.jobid}}" type="button" data-toggle="collapse" data-target="#job{{status.status}}-{{status.jobid}}" aria-expanded="true" aria-controls="#job{{status.status}}-{{status.jobid}}">
+                                <span>ID: {{status.jobid}}</span> <span class="ml-4">Title: {{detail.job_title}}</span>
+                            </div>
+                            <div id="job{{status.status}}-{{status.jobid}}" class="collapse" aria-labelledby="job{{status.jobid}}" data-parent="#accordionExample">
+                                <div class="card-body">
+                                    <div class="row mt-1">
+                                        <span style="font-weight: bold;">Client Name: </span><span>&nbsp;{{detail.client_name}}</span>
+                                    </div>
+                                    <div class="row mt-1">
+                                        <span style="font-weight: bold;">Contact Number: </span><a href='tel:{{detail.mob_number}}'>&nbsp;{{detail.mob_number}}</a>
+                                    </div>
+                                    <div class="row mt-1">
+                                        <span style="font-weight: bold;">Work Date:</span><span>&nbsp;{{detail.workdate}}</span>
+                                    </div>
+                                    <div class="row mt-1">
+                                        <span style="font-weight: bold;">Job Details:</span>
+                                        <p>{{detail.job_detail}}</p>
+                                    </div>
+                                    {% if detail.client_note.strip() != "" %}
+                                        <div class="row mt-1">
+                                            <span style="font-weight: bold;">Client Note:</span>
+                                            <p>{{detail.client_note}}</p>
+                                        </div>
+                                    {% endif %}
+                                    <div class="row mt-1">
+                                        <span style="font-weight: bold;">Address:</span>
+                                        <p>{{detail.address}}</p>
+                                    </div>
+                                    <div class="row mt-1">
+                                        <span style="font-weight: bold;">Posted on: </span><span>&nbsp;{{detail.post_date}}</span>
+                                        &nbsp; at {{detail.post_time}}
+                                    </div>
+                                    {% if status.start_date %}
+                                        <div class="row mt-1">
+                                            <span style="font-weight: bold;">Start Date: </span><span>&nbsp;{{status.start_date}}</span>
+                                        </div>
+                                    {% endif %}
+                                    {% if status.status == 2 %}
+                                        <div class="row mt-1">
+                                            <span style="font-weight: bold;">Complete Date: </span><span>&nbsp;{{status.end_date}}</span>
+                                        </div>
+                                    {% endif %}
+                                    <div class="row mt-1">
+                                        {% if status.status == 1 %}
+                                            {% set status = "primary" %}
+                                            {% if status.start_date %}
+                                                {% set current_status = "Started" %}
+                                            {% else %}
+                                                {% set current_status = "Accepted" %}
+                                            {% endif %}
+                                        {% else %}
+                                            {% if status.status == 2 %}
+                                                {% set status = "success" %}
+                                                {% set current_status = "Completed" %}
+                                            {% else %}
+                                                {% set status = "warning" %}
+                                            {% endif %}
+                                        {% endif %}
+
+                                        <span style="font-weight: bold;">Status: </span><span class="text-{{status}}">&nbsp;{{current_status}}</span><br/>
+                                    </div>
+                                    
+                                        
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% endif %}
+                    </div>
+                </div>
+                {% if 100 > 99 %}
+                    <button class="btn btn-primary">Next</button>
+                {% endif %}
+            </div>
+
+            
+        </div>
+
+    </div>
+    
+    <script>
+        function show_form(el){
+            var form = document.getElementById('pass_form');
+            el.style.display = "none";
+            form.style.display = "block";
+        }
+
+        function confirm_pass(el) {
+            var main = document.getElementById('main');
+            if (main.value == el.value){
+                el.setCustomValidity('');
+            }
+            else{
+                el.setCustomValidity('Confirm password and new password should be same.')
+            }
+        }
+
+        window.onload = function(){
+            var total = parseInt(document.getElementById('job-count').innerText);
+            var accept = parseInt(document.getElementById('accepted_count').innerText)
+            var completed = parseInt(document.getElementById('completed_count').innerText);
+            var reassigned = parseInt(document.getElementById('reassigned_count').innerText);
+            // var accept_bar = document.getElementById('accepted');
+            // var complete_bar = document.getElementById('completed');
+            // var reassign_bar = document.getElementById('reassigned');
+            var accept_percent= String(((accept/total)*100));
+            var completed_percent= String(((completed/total)*100));
+            var reassigned_percent= String(((reassigned/total)*100));
+            $("#accepted").animate({"width":accept_percent+"%"},"fast");
+            $("#completed").animate({"width":completed_percent+"%"},"fast");
+            $("#reassigned").animate({"width":reassigned_percent+"%"},"fast");
+
+            // flash message
+            var alert_box = document.querySelector(".alert-box");
+            var i = 0;
+            {% with messages = get_flashed_messages(with_categories = True) %}
+                {% if messages %}
+                    {% for category,message in messages %}
+                        var text = {{message|tojson}};
+                        var type = {{category|tojson}};
+                        var alert_html = '<div class=" col-lg-12 alert alert-'+ type +' alert-dismissible fade show" role="alert"><span id="alt-item'+i+'"></span><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>'
+                        alert_box.insertAdjacentHTML("beforeend",alert_html);
+                        document.getElementById('alt-item'+i).innerText = text;
+                        i++;
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+        }
+    </script>
+{% endblock %}

@@ -1,0 +1,125 @@
+{% extends '/admin/layout.html' %}
+{% block body %}
+
+<!--flash box-->
+<div class="col-lg-12">
+    <div class="row alert-box">
+        <noscript>
+            {% with messages = get_flashed_messages(with_categories = True) %}
+                {% if messages %}
+                    <div class="col-lg-12 alert alert-info fade show" role="alert"><span class ="alt-item">Enable JavaScript to get the flashed messages</span></div>
+                {% endif %}
+            {% endwith %}
+        </noscript>
+    </div>
+</div>
+<!--flash box ends-->
+
+<div class="filter-box">
+    <div class="filter-item">
+        <label for="filter">Filter</label>
+        <select name="filter" value="{{value}}" onchange="filter_jobs(this.value)" id="filter" class="form-control">
+            <option value="1">Oldest to Latest</option>
+            <option value="-1">Latest to Oldest</option>
+        </select>
+    </div>
+</div>
+
+<div class="col-sm-12 table-responsive mt-5"> 
+    <div class="row">
+        <div class="col-lg-9 head-1" >{{title}}<br/> <span class="title-job" style="font-size: 12px;"></span><!--To be canged by jinja while filtering--></div>
+    </div>
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th scope="col">User ID</th>
+                <th scope="col">Business/Contact Name</th>
+                <th scope="col">ABN Number</th>
+                <th scope="col">Contact Number</th>
+                <th scope="col">Email Id</th>
+                <th scope="col">View</th>
+                <th scope="col">Edit</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if contractors %}
+                    {% for user in contractors %}
+                        <tr>
+                            <th scope="row">{{user.userid}}</th>
+                            <td>{{ user.business_contact_name }}</td>
+                            <td>{{ user.abn }}</td>
+                            <td>{{ user.mob_number }}</td>
+                            <td>{{ user.email }}</td>
+                            <td><a href="/admin/open/contractor/{{user.userid}}" target="_blank">View</a></td>
+                            <td><a href="/admin/edit_contractor/{{user.userid}}" target="_blank">Edit</a></td>
+                        </tr>
+                    {% endfor %}
+            {% endif %}
+            
+        </tbody>
+    </table>
+</div>
+  
+<i class="fa fa-arrow-up back-to-top" title="back to top"></i>
+<style>
+    .filter-box{
+        position: relative;
+    }
+    .filter-item{
+        position: absolute;
+        right:0px;
+        width:200px;
+        z-index: 1;
+    }
+</style>
+<script>
+    // edit jobs details modal function
+    function openEditModal(jobid, el = null){
+        $('#add-contractor *').prop('disabled', true);
+        $(".data-load").css("color","skyblue");
+        $(".data-load").html("Loading...");
+        $("#business").val("Anurag");
+        $("#staticBackdrop-edit-contractor").modal("show");
+        return false;
+    }
+
+    // view jobs details function
+    function openViewModal(jobid, el){
+        $("#viewJobsModal").modal("show");
+        return false;
+    }
+
+    // view jobs funtions- which will be further used to send request for data for different jobs filter
+    function filter_jobs(value){
+        // value is the value for filter
+        title_dict = {
+            "1":"Oldest to Latest", "-1": "Latest to oldest"
+        }
+        window.location = '/admin/view/contractor/'+value;
+    }
+
+    window.onload = function(event){
+        title_dict = {
+            "1":"Oldest to Latest", "-1": "Latest to oldest"
+        }
+        var value = {{value|tojson}};
+        $(".title-job").html("("+title_dict[value]+")");
+        $("#filter").val(value);
+        
+        var alert_box = document.querySelector(".alert-box");
+        var i = 0;
+        {% with messages = get_flashed_messages(with_categories = True) %}
+            {% if messages %}
+                {% for category,message in messages %}
+                    var text = {{message|tojson}};
+                    var type = {{category|tojson}};
+                    var alert_html = '<div class=" col-lg-12 alert alert-'+ type +' alert-dismissible fade show" role="alert"><span id="alt-item'+i+'"></span><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>'
+                    alert_box.insertAdjacentHTML("beforeend",alert_html);
+                    document.getElementById('alt-item'+i).innerHTML = text;
+                    i++;
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    }
+</script>
+{% endblock  %}
