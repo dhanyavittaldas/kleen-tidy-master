@@ -33,7 +33,7 @@ jobs:
            key: ${{secrets.SSH_KEY}}
            port: 22
            script: |
-             rm -rf squiz
+             rm -rf kleen-tidy-master
              git clone https://github.com/dhanyavittaldas/kleen-tidy-master.git
-             python3.8 -m venv /home/github-actions/squiz/venv
-             /home/github-actions/squiz/venv/bin/pip install -r requirements.txt 
+             python3.8 -m venv /home/github-actions/kleen-tidy-master/venv
+             /home/github-actions/kleen-tidy-master/venv/bin/pip install -r requirements.txt 
