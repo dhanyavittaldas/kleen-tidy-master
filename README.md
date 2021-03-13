@@ -15,13 +15,14 @@ https://github.com/dhanyavittaldas/Kleen-Tidy-Part-A.git
 
 ## User testing Log Book
 
-![log](docs\Excel.PNG)
+![Excel](https://user-images.githubusercontent.com/66365067/111030730-9ca0d180-844f-11eb-90c3-f75c3c613f34.PNG)
+
 
 ## Project Management 
 
 Attached is the project management stratergy followed during the production and deployment of this application.
 
-![trello](docs\trello.PNG)
+![trello](https://user-images.githubusercontent.com/66365067/111030781-d7a30500-844f-11eb-86f8-328423b5aed4.PNG)
 ## Link to the deployed application
 
 
@@ -37,8 +38,7 @@ Once the contractor has logged in using the User name and Password provided by t
 - Accept the Job if needed
 - Can track the Job time with the start and Finish option
 - View the upcoming job which are due within the next 7 days
-- View all the active and comple![Excel](https://user-images.githubusercontent.com/66365067/111030730-9ca0d180-844f-11eb-90c3-f75c3c613f34.PNG)
-ted jobs
+- View all the active and completed jobs
 - Change the generic password provided by the admin
 - Edit the details
 
