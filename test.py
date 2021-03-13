@@ -1,6 +1,6 @@
 from app import app, db, modal
 import unittest
-import os
+
 
 # try:
 #     os.remove("/app/modal.db")
@@ -10,7 +10,7 @@ import os
 
 
 class FlaskTestCase(unittest.TestCase):
-
+    db.create_all()
     if not modal.AdminModal.query.first():
         admin = modal.AdminModal(id = "$dvd.admin")
         admin.setindex()
