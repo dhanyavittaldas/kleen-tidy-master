@@ -106,7 +106,7 @@ def start(id):
          job.start_date = start_date
          db.session.add(job)
          db.session.commit()
-         return jsonify({"status":True,"id":id,"message":"Finihed"})
+         return jsonify({"status":True,"id":id,"message":"Finished"})
       else:
          return jsonify({"status":False, "id":f"job{id}","message":"<span class='text-danger'>Unable to accept the job</span>"})
    else:

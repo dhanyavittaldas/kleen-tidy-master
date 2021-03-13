@@ -17,7 +17,7 @@ jobs:
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
       - name: Run Tests
         run: |
-          python -m unittest discover tests/
+          python -m unittest discover
   deployment:
      needs: test_suite
      runs-on: ubuntu-latest
@@ -36,4 +36,4 @@ jobs:
              rm -rf kleen-tidy-master
              git clone https://github.com/dhanyavittaldas/kleen-tidy-master.git
              python3.8 -m venv /home/github-actions/kleen-tidy-master/venv
-             /home/github-actions/kleen-tidy-master/venv/bin/pip install -r requirements.txt 
+             /home/github-actions/kleen-tidy-master/venv/bin/pip install -r requirements.txt
