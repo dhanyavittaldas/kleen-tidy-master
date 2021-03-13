@@ -54,7 +54,7 @@ def add_jobs():
 @admin.route("/add/jobs", methods=['POST'])
 @login_required
 def post_jobs():
-    if is_admin(current_user.id):   
+    if is_admin(current_user.id):
         try:
             if request.method == "POST":
                 country_code = "+61"
@@ -84,7 +84,7 @@ def post_jobs():
                     </div>
                     """
                     flash(message, "success")
-                else:  
+                else:
                     flash("Please enter all the required feilds.","danger")
             return redirect(url_for("admin.add_jobs"))
         except:
@@ -158,8 +158,8 @@ def post_contractor():
                     flash("All feilds are required. Please fill all the feilds.","danger")
 
             return redirect(url_for("admin.add_contractor"))
-        except Exception as e:
-            flash(f"Error Occurred!{e}", "danger")
+        except:
+            flash("Error Occurred!", "danger")
             return redirect(url_for("admin.add_contractor"))
     else:
         logout_user()
@@ -191,15 +191,15 @@ def admin_view_jobs(filter = "1"):
                 if not jobs:
                     flash("No new jobs!","info")
             elif filter == "3":
-                jobs = Status.query.filter_by(status = 1).order_by(Status.jobid.desc()).all()
+                jobs = db.session.query(Jobs).outerjoin(Status,Jobs.id ==Status.jobid).filter(Status.status ==1).all()
                 if not jobs:
                     flash("No jobs with status as Accepted!","info")
             elif filter == "4":
-                jobs = Status.query.filter_by(status = 2).order_by(Status.jobid.desc()).all()
+                jobs = db.session.query(Jobs).outerjoin(Status,Jobs.id ==Status.jobid).filter(Status.status ==2).all()
                 if not jobs:
                     flash("No jobs with status as Completed!","info")
             elif filter == "5":
-                jobs = Status.query.filter_by(status = 3).order_by(Status.jobid.desc()).all()
+                jobs = db.session.query(Jobs).outerjoin(Status,Jobs.id ==Status.jobid).filter(Status.status ==3).all()
                 if not jobs:
                     flash("No jobs with status as Reassigned!","info")
             elif filter == "6":
@@ -212,8 +212,8 @@ def admin_view_jobs(filter = "1"):
                 flash("Invalid filter! So all jobs are been displayed to you.","warning")
                 return redirect(url_for("admin.admin_view_jobs"))
             return render_template("/admin/view_jobs.html", title=title_dict.get(filter), value = filter, jobs = jobs)
-        except Exception as e:
-            flash(f"Sorry! Something went wrong.If this keeps on comming, kindly contact developer.{e}","danger")
+        except:
+            flash("Sorry! Something went wrong.If this keeps on comming, kindly contact developer","danger")
             return render_template("/admin/view_jobs.html", title=title_dict.get(filter), value = filter)
     else:
         logout_user()
@@ -236,7 +236,7 @@ def admin_view_contractor(filter = "-1"):
             if not contractors:
                 flash("No contractor added yet.<a href = '/admin/add/contractor'>Add Contractors</a>","info")
             return render_template("/admin/view_contractor.html", title="Contactor's List", value = filter, contractors = contractors)
-            
+
         except:
             flash("Sorry! Something went wrong.If this keeps on comming, kindly contact developer","danger")
             return render_template("/admin/view_contractor.html", title="Contactor's List", value = filter)
@@ -267,9 +267,7 @@ def open_contractor(userid = None):
                 return render_template("/admin/profile.html", title=f"Profile | {contractor.id}", details = details, jobs = jobs, accepted = accepted, completed = completed, reassigned = reassigned, acc_status = acc_status, next_type = next_type)
             accepted = completed = reassigned = -1
             return render_template("/admin/profile.html", title=f"Profile | {contractor.id}", details = details,  accepted = accepted, completed = completed, reassigned = reassigned, acc_status = acc_status, next_type = next_type)
-        # except Exception as e:
-        #     flash(f"Sorry! Something went wrong.If this keeps on comming, kindly contact developer{e}","danger")
-        #     return redirect(url_for("admin.admin_view_contractor"))
+
     else:
         logout_user()
         return redirect(url_for("admin.admin_login"))
@@ -282,7 +280,7 @@ def admin_open_jobs(id):
     try:
         if is_admin(current_user.id):
             jobs = db.session.query(Status,Jobs).outerjoin(Jobs, Status.jobid == Jobs.id).order_by(Status.jobid.desc()).filter(Status.jobid == int(id)).first()
-            if jobs: 
+            if jobs:
                 job = jobs[0]
                 detail = jobs[1]
                 user = job.user
@@ -308,8 +306,8 @@ def admin_open_jobs(id):
             logout_user()
             flash("Login is required!")
             return redirect(url_for("admin.admin_login"))
-    except Exception as e:
-        message = f"Sorry! Something went wrong.If this keeps on comming, kindly contact developer: {e}"
+    except:
+        message = "Sorry! Something went wrong.If this keeps on comming, kindly contact developer"
         return jsonify({"status":False,"message":message})
 
 @admin.route("/delete/job/<id>")
