@@ -37,7 +37,8 @@ Once the contractor has logged in using the User name and Password provided by t
 - Accept the Job if needed
 - Can track the Job time with the start and Finish option
 - View the upcoming job which are due within the next 7 days
-- View all the active and completed jobs
+- View all the active and comple![Excel](https://user-images.githubusercontent.com/66365067/111030730-9ca0d180-844f-11eb-90c3-f75c3c613f34.PNG)
+ted jobs
 - Change the generic password provided by the admin
 - Edit the details
 
