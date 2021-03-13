@@ -60,7 +60,7 @@ def view_jobs(filter):
       flash("Please login!", "danger")
       return redirect(url_for("team_login"))
 
-
+#accepting jobs
 @sub_cont.route("/accept/job/<id>")
 @login_required
 def accept(id):
@@ -78,6 +78,7 @@ def accept(id):
       logout_user()
       return redirect(url_for("admin.admin_login"))
 
+#Marking as completed jobs
 @sub_cont.route("/finished/job/<id>")
 @login_required
 def finish(id):
@@ -94,7 +95,7 @@ def finish(id):
       else:
          return jsonify({"status":False, "id":f"job{id}","message":"<span>Unable to mark as finished the job</span>"})
 
-
+#Marking job as started
 @sub_cont.route("/start/job/<id>")
 @login_required
 def start(id):
@@ -113,7 +114,7 @@ def start(id):
       logout_user()
       return redirect(url_for("admin.admin_login"))
 
-
+#Showing profile of user
 @sub_cont.route("/profile/<userid>")
 @login_required
 def profile(userid):
@@ -137,6 +138,7 @@ def profile(userid):
       logout_user()
       return redirect(url_for("admin.admin_login"))
 
+#changing the password
 @sub_cont.route("/change_pass/<userid>", methods=['POST'])
 @login_required
 def change_pass(userid):
