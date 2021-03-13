@@ -19,8 +19,8 @@ def team_login():
       if current_user.is_authenticated and not is_admin(current_user.id):
          return redirect(url_for("sub_cont.contractor_home"))
       return render_template("/general/team_login.html", title="Login | Contractor")
-   except Exception as e:
-      flash(e, "error")
+   except:
+      flash("Something went wrong , Kindly contact the main contractor","danger")
       return redirect(request.url)
 
 # team_login submission and authentication processd
