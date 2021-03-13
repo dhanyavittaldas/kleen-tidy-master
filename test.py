@@ -2,12 +2,6 @@ from app import app, db, modal
 import unittest
 
 
-# try:
-#     os.remove("/app/modal.db")
-# except:
-#     pass
-
-
 
 class FlaskTestCase(unittest.TestCase):
     db.create_all()
@@ -36,6 +30,7 @@ class FlaskTestCase(unittest.TestCase):
         user = modal.Userlogin.query.first()
         password = user.generate_random_password()
         user.set_password(password)
+        user.is_active =1
         userid = user.id
         db.session.add(user)
         db.session.commit()
@@ -111,7 +106,7 @@ class FlaskTestCase(unittest.TestCase):
         tester = app.test_client(self)
         data = dict(userid = FlaskTestCase.userid, password = FlaskTestCase.password)
         response = tester.post("/contractor/authentication", data = data, follow_redirects = True)
-        self.assertTrue(b"Welcome to the contractor Protal" in response.data)
+        self.assertTrue(b"Welcome to the contractor Portal" in response.data)
     # login behaves correctly with incorrect data
     def test_4_team_login_login_incorrect_data(self):
         tester = app.test_client(self)
